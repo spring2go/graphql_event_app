@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/easyevent
+    username: easyevent
+    password: pass314159
