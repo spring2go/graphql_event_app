@@ -10,7 +10,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-@TableName(value = "event")
+@TableName(value = "tb_event")
 public class EventEntity {
     @TableId(type = IdType.AUTO)
     private Integer id;
@@ -18,6 +18,7 @@ public class EventEntity {
     private String description;
     private Float price;
     private Date date;
+    private Integer creatorId;
 
     public static EventEntity fromEventInput(EventInput input) {
         EventEntity eventEntity = new EventEntity();
@@ -25,6 +26,7 @@ public class EventEntity {
         eventEntity.setDescription(input.getDescription());
         eventEntity.setPrice(input.getPrice());
         eventEntity.setDate(DateUtil.convertISOStringToDate(input.getDate()));
+        eventEntity.setCreatorId(input.getCreatorId());
         return eventEntity;
     }
 }
