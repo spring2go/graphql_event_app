@@ -1,3 +1,5 @@
+-- noinspection SqlNoDataSourceInspectionForFile
+
 DROP TABLE IF EXISTS tb_event;
 DROP TABLE IF EXISTS tb_user;
 
