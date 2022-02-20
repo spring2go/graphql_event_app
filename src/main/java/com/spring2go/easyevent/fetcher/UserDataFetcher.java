@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.netflix.graphql.dgs.*;
 import com.netflix.graphql.dgs.context.DgsContext;
 import com.spring2go.easyevent.custom.AuthContext;
+import com.spring2go.easyevent.entity.BookingEntity;
 import com.spring2go.easyevent.entity.EventEntity;
 import com.spring2go.easyevent.entity.UserEntity;
+import com.spring2go.easyevent.mapper.BookingEntityMapper;
 import com.spring2go.easyevent.mapper.EventEntityMapper;
 import com.spring2go.easyevent.mapper.UserEntityMapper;
 import com.spring2go.easyevent.type.*;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 public class UserDataFetcher {
     private final UserEntityMapper userEntityMapper;
     private final EventEntityMapper eventEntityMapper;
+    private final BookingEntityMapper bookingEntityMapper;
     private final PasswordEncoder passwordEncoder;
 
     @DgsQuery
@@ -39,7 +42,6 @@ public class UserDataFetcher {
 
     @DgsMutation
     public User createUser(@InputArgument UserInput userInput) {
-
         ensureUserNotExists(userInput);
 
         UserEntity newUserEntity = new UserEntity();
@@ -73,6 +75,19 @@ public class UserDataFetcher {
                 .setTokenExpiration(1);
 
         return authData;
+    }
+
+
+    @DgsData(parentType = "User", field = "bookings")
+    public List<Booking> bookings(DgsDataFetchingEnvironment dfe) {
+        User user = dfe.getSource();
+        QueryWrapper<BookingEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(BookingEntity::getUserId, user.getId());
+        List<BookingEntity> bookingEntityList = bookingEntityMapper.selectList(queryWrapper);
+        List<Booking> bookings = bookingEntityList.stream()
+                .map(Booking::fromEntity)
+                .collect(Collectors.toList());
+        return bookings;
     }
 
     @DgsData(parentType = "User", field = "createdEvents")

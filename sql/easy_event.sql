@@ -1,5 +1,6 @@
 -- noinspection SqlNoDataSourceInspectionForFile
 
+DROP TABLE IF EXISTS tb_booking;
 DROP TABLE IF EXISTS tb_event;
 DROP TABLE IF EXISTS tb_user;
 
@@ -20,3 +21,16 @@ CREATE TABLE tb_event (
     primary key (id),
     constraint fk_created_id foreign key(creator_id) references tb_user(id)
 );
+
+CREATE TABLE tb_booking (
+    id SERIAL,
+    user_id integer not null,
+    event_id integer not null,
+    created_at timestamp not null,
+    updated_at timestamp not null,
+    primary key (id),
+    constraint fk_user_id foreign key(user_id) references tb_user(id),
+    constraint fk_event_id foreign key(event_id) references tb_event(id)
+)
+
+CREATE INDEX idx_user_id ON tb_booking (user_id);

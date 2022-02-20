@@ -38,6 +38,7 @@ public class AuthContextBuilder implements DgsCustomContextBuilderWithRequest {
         try {
             userId = TokenUtil.verifyToken(token);
         } catch (Exception ex) {
+            log.warn("令牌校验失败！", ex);
             authContext.setTokenInvalid(true);
             return authContext;
         }
