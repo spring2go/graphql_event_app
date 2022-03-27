@@ -36,9 +36,6 @@ class App extends Component {
           <MainNavigation />
           <main className="main-content">
             <Routes>
-              {!this.state.token && (
-                <Route exact path="/" element={<Navigate to="/auth" />} />
-              )}
               {this.state.token && (
                 <Route exact path="/" element={<Navigate to="/events" />} />
               )}
@@ -51,6 +48,9 @@ class App extends Component {
               <Route path="/events" element={<EventsPage />} />
               {this.state.token && (
                 <Route path="/bookings" element={<BookingsPage />} />
+              )}
+              {!this.state.token && (
+                <Route path="*" element={<Navigate to="/auth" />} />
               )}
             </Routes>
           </main>
