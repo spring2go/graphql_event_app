@@ -1,5 +1,6 @@
 package com.spring2go.easyevent.fetcher;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.netflix.graphql.dgs.*;
 import com.netflix.graphql.dgs.context.DgsContext;
 import com.spring2go.easyevent.custom.AuthContext;
@@ -29,8 +30,13 @@ public class BookingDataFetcher {
     private final UserEntityMapper userEntityMapper;
 
     @DgsQuery
-    public List<Booking> bookings() {
-        List<Booking> bookings = bookingEntityMapper.selectList(null)
+    public List<Booking> bookings(DataFetchingEnvironment dfe) {
+        AuthContext authContext = DgsContext.getCustomContext(dfe);
+        authContext.ensureAuthenticated();
+
+        QueryWrapper<BookingEntity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.lambda().eq(BookingEntity::getUserId, authContext.getUserEntity().getId());
+        List<Booking> bookings = bookingEntityMapper.selectList(queryWrapper)
                 .stream()
                 .map(Booking::fromEntity)
                 .collect(Collectors.toList());
