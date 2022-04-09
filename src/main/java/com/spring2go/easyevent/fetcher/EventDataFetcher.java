@@ -6,6 +6,7 @@ import com.netflix.graphql.dgs.context.DgsContext;
 import com.spring2go.easyevent.custom.AuthContext;
 import com.spring2go.easyevent.entity.EventEntity;
 import com.spring2go.easyevent.entity.UserEntity;
+import com.spring2go.easyevent.fetcher.dataloader.CreatorsDataLoader;
 import com.spring2go.easyevent.mapper.EventEntityMapper;
 import com.spring2go.easyevent.mapper.UserEntityMapper;
 import com.spring2go.easyevent.type.Event;
@@ -14,8 +15,10 @@ import com.spring2go.easyevent.type.User;
 import graphql.schema.DataFetchingEnvironment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dataloader.DataLoader;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -51,10 +54,20 @@ public class EventDataFetcher {
     }
 
     @DgsData(parentType = "Event", field = "creator")
-    public User creator(DgsDataFetchingEnvironment dfe) {
+    public CompletableFuture<User> creator(DgsDataFetchingEnvironment dfe) {
         Event event = dfe.getSource();
-        UserEntity userEntity = userEntityMapper.selectById(event.getCreatorId());
-        User user = User.fromEntity(userEntity);
-        return user;
+        log.info("Fetching creator wit id: {}", event.getCreatorId());
+        DataLoader<Integer, User> dataLoader = dfe.getDataLoader(CreatorsDataLoader.class);
+
+        return dataLoader.load(event.getCreatorId());
     }
+
+//    @DgsData(parentType = "Event", field = "creator")
+//    public User creator(DgsDataFetchingEnvironment dfe) {
+//        Event event = dfe.getSource();
+//        log.info("Fetching creator {}", event.getCreatorId());
+//        UserEntity userEntity = userEntityMapper.selectById(event.getCreatorId());
+//        User user = User.fromEntity(userEntity);
+//        return user;
+//    }
 }
