@@ -60,8 +60,8 @@ class EventsPage extends Component {
 
     const requestBody = {
       query: `
-        mutation {
-            createEvent(eventInput: {title: "${title}", price: ${price}, description: "${description}", date: "${date}"}) {
+        mutation CreateEvent($title: String!, $desc: String!, $price: Float!, $date: String!) {
+            createEvent(eventInput: {title: $title, price: $price, description: $desc, date: $date}) {
                 id
                 title
                 description
@@ -70,6 +70,12 @@ class EventsPage extends Component {
             }
         }
         `,
+      variables: {
+        title: title,
+        desc: description,
+        price: price,
+        date: date,
+      },
     };
 
     const token = this.context.token;
@@ -176,14 +182,17 @@ class EventsPage extends Component {
     }
     const requestBody = {
       query: `
-        mutation {
-          bookEvent(eventId: "${this.state.selectedEvent.id}") {
+        mutation BookEvent($id: ID!) {
+          bookEvent(eventId: $id) {
               id
               createdAt
               updatedAt
           }
         }
         `,
+      variables: {
+        id: this.state.selectedEvent.id,
+      },
     };
 
     // https://www.baeldung.com/spring-cors
